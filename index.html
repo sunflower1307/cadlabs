@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>title</title>
+    <style>
+        body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  overflow: hidden;
+}
+
+.glitch-container {
+  position: relative;
+}
+
+.glitch-text, .glitch-layers .layer {
+  font-family: 'Courier New', monospace;
+  font-size: 6rem;
+  font-weight: bold;
+  color: #fff;
+  position: relative;
+}
+
+.glitch-layers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+}
+
+.layer.red {
+  color: #f00;
+  text-shadow: 2px 0 #f00;
+  clip-path: inset(0 100% 0 0);
+}
+
+.layer.blue {
+  color: #00f;
+  text-shadow: -2px 0 #00f;
+  clip-path: inset(0 0 0 100%);
+}
+
+@keyframes glitch-anim {
+  0% { clip-path: inset(10% 0 90% 0); }
+  20% { clip-path: inset(80% 0 5% 0); }
+  40% { clip-path: inset(30% 0 60% 0); }
+  60% { clip-path: inset(70% 0 20% 0); }
+  80% { clip-path: inset(5% 0 80% 0); }
+  100% { clip-path: inset(60% 0 30% 0); }
+}
+
+@keyframes glitch-anim2 {
+  0% { transform: translateX(0) skew(0deg); }
+  20% { transform: translateX(-5px) skew(10deg); }
+  40% { transform: translateX(5px) skew(0deg); }
+  60% { transform: translateX(-5px) skew(-5deg); }
+  80% { transform: translateX(5px) skew(5deg); }
+  100% { transform: translateX(0) skew(0deg); }
+}
+
+.glitch-effect {
+  animation: glitch-anim 0.5s infinite alternate, glitch-anim2 1s infinite alternate;
+}
+    </style>
+</head>
+<body>
+    <div class="glitch-container">
+  <div class="glitch-text" data-text="CAD LABS">CAD LABS</div>
+  <div class="glitch-layers">
+    <div class="layer red"></div>
+    <div class="layer blue"></div>
+  </div>
+</div>
+
+<script>
+    class GlitchEffect {
+  constructor(element) {
+    this.element = element;
+    this.text = element.dataset.text;
+    this.layers = document.querySelectorAll('.layer');
+    this.init();
+  }
+
+  init() {
+    // Set initial text
+    this.element.textContent = this.text;
+    this.layers.forEach(layer => layer.textContent = this.text);
+
+    // Start glitch loop
+    this.glitchLoop();
+  }
+
+  randomGlitch() {
+    // Randomly decide if glitch should happen
+    if(Math.random() < 0.7) return;
+
+    // Apply glitch effect
+    this.element.classList.add('glitch-effect');
+    this.layers.forEach(layer => {
+      layer.style.display = 'block';
+      layer.style.animation = `glitch-anim ${Math.random() * 0.5 + 0.1}s infinite alternate`;
+    });
+
+    // Random character swap
+    if(Math.random() < 0.3) {
+      const chars = "!@#$%^&*()_+{}|:<>?~";
+      const newText = this.text.split('').map(c => 
+        Math.random() > 0.8 ? chars[Math.floor(Math.random() * chars.length)] : c
+      ).join('');
+      
+      this.layers.forEach(layer => {
+        layer.textContent = newText;
+      });
+    }
+
+    // Reset after delay
+    setTimeout(() => {
+      this.element.classList.remove('glitch-effect');
+      this.layers.forEach(layer => {
+        layer.style.display = 'none';
+        layer.textContent = this.text;
+      });
+    }, 100 + Math.random() * 400);
+  }
+
+  glitchLoop() {
+    this.randomGlitch();
+    setTimeout(() => this.glitchLoop(), 1000 + Math.random() * 2000);
+  }
+}
+
+// Initialize effect
+const glitchText = document.querySelector('.glitch-text');
+new GlitchEffect(glitchText);
+
+// Optional: Mouse interaction
+glitchText.addEventListener('mouseenter', () => {
+  glitchText.dataset.text = "HACK THE PLANET";
+  new GlitchEffect(glitchText);
+});
+</script>
+</body>
+</html>
